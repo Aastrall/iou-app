@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IOU | Premium Social Finance</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { darkBg: '#050505', darkCard: '#111111', neoGreen: '#39FF14', iouBlue: '#2563eb' } } }
+        }
+
+        // --- INTEGRATED FIREBASE CONFIG (FROM YOUR SCREENSHOT) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyC_O89rLpoYzVZ4ERKBmirOIGhOwwulCIs",
+            authDomain: "iou-app-b7ed2.firebaseapp.com",
+            databaseURL: "https://iou-app-b7ed2-default-rtdb.firebaseio.com",
+            projectId: "iou-app-b7ed2",
+            storageBucket: "iou-app-b7ed2.firebasestorage.app",
+            messagingSenderId: "607906588480",
+            appId: "1:607906588480:web:a64b8ca13884ef5582fca5"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        emailjs.init("V8MTdv-m0u-CbJnZu");
+    </script>
+
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .page { display: none; animation: slideUp 0.4s ease-out; }
+        .page.active { display: block; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .blur-val { filter: blur(8px); }
+        .card-glow { box-shadow: 0 0 30px rgba(37, 99, 235, 0.2); }
+    </style>
+</head>
+<body class="bg-darkBg text-white font-sans min-h-screen no-scrollbar">
+
+    <div id="authSection" class="fixed inset-0 z-[1000] bg-darkBg flex items-center justify-center p-6 overflow-y-auto">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-12">
+                <h1 class="text-7xl font-black tracking-tighter italic text-iouBlue">IOU</h1>
+                <p class="text-[10px] uppercase tracking-[0.3em] text-zinc-500 mt-2 font-bold">The Future of Social Credit</p>
+            </div>
+
+            <div id="loginForm" class="glass p-8 rounded-[2.5rem] shadow-2xl">
+                <input type="email" id="emailInput" placeholder="Email Address" class="w-full bg-zinc-900/50 p-5 rounded-2xl mb-4 outline-none border border-zinc-800 focus:border-iouBlue transition font-bold text-white">
+                <input type="password" id="passInput" placeholder="Security Password" class="w-full bg-zinc-900/50 p-5 rounded-2xl mb-6 outline-none border border-zinc-800 focus:border-iouBlue transition font-bold text-white">
+                <button onclick="handleAuthSubmit()" class="w-full bg-iouBlue text-white font-black py-5 rounded-2xl uppercase tracking-widest shadow-lg shadow-blue-900/20">Authorize Access</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="appContent" class="hidden flex flex-col h-screen">
+        <header class="p-6 flex justify-between items-center bg-darkBg/50 backdrop-blur-xl sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-iouBlue rounded-full flex items-center justify-center font-black italic text-sm shadow-lg shadow-blue-500/20" id="headerAvatar">U</div>
+                <div>
+                    <p id="headerName" class="font-black text-sm italic tracking-tight">USER</p>
+                    <p id="headerID" class="text-[9px] text-zinc-500 font-bold tracking-widest uppercase">#ID-PENDING</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto px-6 pb-32 no-scrollbar">
+            <section id="page-home" class="page active">
+                <div class="card-gradient card-glow p-8 rounded-[2.5rem] bg-iouBlue mb-8 text-white relative overflow-hidden h-60 flex flex-col justify-between">
+                    <div>
+                        <p class="text-[10px] font-black uppercase opacity-70 tracking-widest">Available Credit</p>
+                        <p id="totalDisplay" class="text-5xl font-black tracking-tighter mt-1">$0.00</p>
+                    </div>
+                    <div class="flex justify-between items-end">
+                        <p class="font-mono text-[10px] tracking-[0.3em] opacity-60">IOU PREMIUM DEBIT</p>
+                        <p class="text-xl font-black italic opacity-30">VISA</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-4 mb-10">
+                    <button onclick="showModal('deposit')" class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center border border-zinc-800">📥</div>
+                        <span class="text-[9px] font-black uppercase text-zinc-500">Add</span>
+                    </button>
+                    <button onclick="navTo('friends')" class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center border border-zinc-800">💸</div>
+                        <span class="text-[9px] font-black uppercase text-zinc-500">Pay</span>
+                    </button>
+                    <button onclick="navTo('savings')" class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center border border-zinc-800">🎯</div>
+                        <span class="text-[9px] font-black uppercase text-zinc-500">Goals</span>
+                    </button>
+                    <button onclick="signOut()" class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center border border-zinc-800">🚪</div>
+                        <span class="text-[9px] font-black uppercase text-zinc-500">Exit</span>
+                    </button>
+                </div>
+
+                <h3 class="font-black text-xs uppercase text-zinc-500 mb-6">Recent Ledger</h3>
+                <div id="loanList" class="space-y-4"></div>
+            </section>
+
+            <section id="page-friends" class="page">
+                <div class="glass p-2 rounded-2xl flex mb-8">
+                    <button id="tab-f-list" onclick="switchFriendTab('list')" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase bg-iouBlue text-white">Contacts</button>
+                    <button id="tab-f-req" onclick="switchFriendTab('req')" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase text-zinc-500 relative">Pending <span id="reqBadge" class="hidden absolute top-2 right-4 w-1.5 h-1.5 bg-red-500 rounded-full"></span></button>
+                </div>
+
+                <div id="addFriendSection" class="bg-zinc-900/50 p-6 rounded-3xl border border-zinc-800 mb-8">
+                    <p class="text-[9px] font-black uppercase text-zinc-500 mb-4 tracking-widest">Connect with ID</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="friendIdInput" placeholder="EX: XJ82K" class="flex-1 bg-zinc-900 p-4 rounded-xl outline-none font-bold uppercase text-xs border border-zinc-800 text-white">
+                        <button onclick="sendFriendRequest()" class="bg-iouBlue px-6 rounded-xl font-black text-white">+</button>
+                    </div>
+                </div>
+
+                <div id="friendsListContainer" class="space-y-3"></div>
+                <div id="requestsListContainer" class="hidden space-y-3"></div>
+            </section>
+
+            <section id="page-savings" class="page">
+                <div class="bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-800 mb-8 text-center">
+                    <h2 id="goalName" class="text-xl font-black italic">No Active Goal</h2>
+                    <p id="goalAmountDisplay" class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mt-1">$0 / $0</p>
+                </div>
+                <button onclick="setNewGoal()" class="w-full glass p-5 rounded-2xl font-black text-[10px] uppercase tracking-widest text-white">Create New Target</button>
+            </section>
+        </main>
+
+        <nav class="fixed bottom-0 left-0 right-0 p-6 bg-darkBg/80 backdrop-blur-2xl border-t border-zinc-900 flex justify-around items-center z-50">
+            <button onclick="navTo('home')" class="p-2 text-xl">🏠</button>
+            <button onclick="navTo('friends')" class="p-2 text-xl">👥</button>
+            <button onclick="navTo('savings')" class="p-2 text-xl">🎯</button>
+        </nav>
+    </div>
+
+    <div id="modalOverlay" class="hidden fixed inset-0 bg-black/90 z-[2000] flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="bg-darkCard w-full max-w-sm p-8 rounded-[3rem] border border-zinc-800">
+            <h2 id="modalTitle" class="text-xl font-black mb-8 italic text-center uppercase text-zinc-400">Amount</h2>
+            <input id="modalAmount" type="number" placeholder="0.00" class="w-full bg-transparent p-4 outline-none text-6xl font-black text-center mb-8 text-iouBlue">
+            <button id="modalConfirmBtn" class="w-full bg-iouBlue text-white font-black py-5 rounded-2xl uppercase tracking-widest">Process</button>
+            <button onclick="closeModal()" class="w-full mt-6 text-zinc-600 font-black text-[10px] uppercase text-center">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentSafeEmail = "";
+
+        // AUTH SYSTEM
+        async function handleAuthSubmit() {
+            const email = document.getElementById('emailInput').value.toLowerCase().trim();
+            const pass = document.getElementById('passInput').value;
+            if(!email || !pass) return;
+
+            const safeEmail = email.replace(/\./g, '_');
+            const snap = await db.ref(`users/${safeEmail}`).once('value');
+            let user = snap.val();
+
+            if(user) {
+                if(user.pass === pass) loginSuccess(user, safeEmail);
+                else alert("Incorrect password.");
+            } else {
+                if(confirm("Account not found. Create new profile?")) {
+                    user = {
+                        email, pass,
+                        lendID: Math.random().toString(36).substring(2, 7).toUpperCase(),
+                        balance: 0,
+                        friends: [],
+                        requests: {},
+                        loans: [{name: 'Welcome Bonus', amount: 50, date: 'Today'}],
+                        savings: { goal: 'None', target: 0, current: 0 }
+                    };
+                    await db.ref(`users/${safeEmail}`).set(user);
+                    loginSuccess(user, safeEmail);
+                }
+            }
+        }
+
+        function loginSuccess(user, safeEmail) {
+            currentUser = user;
+            currentSafeEmail = safeEmail;
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('appContent').classList.remove('hidden');
+            
+            // Listen for changes
+            db.ref(`users/${safeEmail}`).on('value', (snap) => {
+                currentUser = snap.val();
+                render();
+            });
+        }
+
+        function render() {
+            const loans = currentUser.loans || [];
+            const bal = loans.reduce((a, b) => a + b.amount, 0);
+            document.getElementById('totalDisplay').innerText = `$${bal.toFixed(2)}`;
+            document.getElementById('headerID').innerText = "#" + currentUser.lendID;
+            document.getElementById('headerName').innerText = currentUser.email.split('@')[0].toUpperCase();
+
+            // Render Ledger
+            const list = document.getElementById('loanList');
+            list.innerHTML = '';
+            loans.slice(-5).reverse().forEach(t => {
+                list.innerHTML += `
+                    <div class="glass p-5 rounded-3xl flex justify-between items-center">
+                        <div>
+                            <p class="font-black text-[11px] uppercase">${t.name}</p>
+                            <p class="text-[8px] text-zinc-600 font-bold">${t.date || 'Just now'}</p>
+                        </div>
+                        <p class="font-black ${t.amount >= 0 ? 'text-neoGreen' : 'text-zinc-400'}">${t.amount >= 0 ? '+' : ''}$${t.amount.toFixed(2)}</p>
+                    </div>`;
+            });
+
+            // Friends
+            const fList = document.getElementById('friendsListContainer');
+            fList.innerHTML = '';
+            (currentUser.friends || []).forEach(fID => {
+                fList.innerHTML += `
+                    <div class="bg-zinc-900/50 p-5 rounded-3xl flex justify-between items-center border border-zinc-800">
+                        <p class="font-black italic">#${fID}</p>
+                        <button onclick="payFriend('${fID}')" class="bg-iouBlue text-white py-2 px-4 rounded-xl text-[9px] font-black uppercase">Pay</button>
+                    </div>`;
+            });
+
+            // Requests
+            const rList = document.getElementById('requestsListContainer');
+            const reqs = Object.keys(currentUser.requests || {});
+            document.getElementById('reqBadge').classList.toggle('hidden', reqs.length === 0);
+            rList.innerHTML = '';
+            reqs.forEach(id => {
+                rList.innerHTML += `
+                    <div class="glass p-5 rounded-3xl flex justify-between items-center">
+                        <p class="font-black italic">#${id}</p>
+                        <button onclick="acceptFriend('${id}')" class="bg-neoGreen text-black py-2 px-4 rounded-xl text-[9px] font-black uppercase">Accept</button>
+                    </div>`;
+            });
+        }
+
+        async function sendFriendRequest() {
+            const targetID = document.getElementById('friendIdInput').value.toUpperCase().trim();
+            if(!targetID || targetID === currentUser.lendID) return;
+            const snap = await db.ref('users').once('value');
+            const all = snap.val();
+            let foundPath = null;
+            for(let p in all) if(all[p].lendID === targetID) foundPath = p;
+            if(foundPath) {
+                await db.ref(`users/${foundPath}/requests/${currentUser.lendID}`).set(true);
+                alert("Request Sent!");
+            } else alert("ID not found.");
+        }
+
+        async function acceptFriend(fromID) {
+            if(!currentUser.friends) currentUser.friends = [];
+            if(!currentUser.friends.includes(fromID)) currentUser.friends.push(fromID);
+            delete currentUser.requests[fromID];
+
+            const snap = await db.ref('users').once('value');
+            const all = snap.val();
+            let otherPath = null;
+            for(let p in all) if(all[p].lendID === fromID) otherPath = p;
+
+            if(otherPath) {
+                const otherFriends = all[otherPath].friends || [];
+                if(!otherFriends.includes(currentUser.lendID)) otherFriends.push(currentUser.lendID);
+                await db.ref(`users/${currentSafeEmail}`).update({ friends: currentUser.friends, requests: currentUser.requests || {} });
+                await db.ref(`users/${otherPath}`).update({ friends: otherFriends });
+                alert("Connected!");
+            }
+        }
+
+        async function payFriend(fID) {
+            const amt = parseFloat(prompt("Amount to send:"));
+            if(!amt || amt <= 0) return;
+
+            const loans = currentUser.loans || [];
+            const bal = loans.reduce((a, b) => a + b.amount, 0);
+            if(amt > bal) return alert("Insufficient funds.");
+
+            const snap = await db.ref('users').once('value');
+            const all = snap.val();
+            let otherPath = null;
+            for(let p in all) if(all[p].lendID === fID) otherPath = p;
+
+            if(otherPath) {
+                const otherLoans = all[otherPath].loans || [];
+                currentUser.loans.push({name: `Paid #${fID}`, amount: -amt, date: 'Today'});
+                otherLoans.push({name: `From #${currentUser.lendID}`, amount: amt, date: 'Today'});
+                await db.ref(`users/${currentSafeEmail}/loans`).set(currentUser.loans);
+                await db.ref(`users/${otherPath}/loans`).set(otherLoans);
+                alert("Payment Successful!");
+            }
+        }
+
+        // NAVIGATION
+        function navTo(p) { 
+            document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+            document.getElementById('page-'+p).classList.add('active');
+        }
+        function switchFriendTab(tab) {
+            document.getElementById('friendsListContainer').classList.toggle('hidden', tab !== 'list');
+            document.getElementById('requestsListContainer').classList.toggle('hidden', tab !== 'req');
+            document.getElementById('tab-f-list').classList.toggle('bg-iouBlue', tab === 'list');
+            document.getElementById('tab-f-req').classList.toggle('bg-iouBlue', tab === 'req');
+        }
+        function showModal() { document.getElementById('modalOverlay').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('modalOverlay').classList.add('hidden'); }
+        function signOut() { location.reload(); }
+    </script>
+</body>
+</html>
