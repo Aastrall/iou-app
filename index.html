@@ -11,7 +11,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
-        // FIXED KEYS - Manual verification of case sensitivity (V and Z)
         const firebaseConfig = {
             apiKey: "AIzaSyC_089rLpoYzvZ4ERKBMirOIGhOwwulCIs",
             authDomain: "iou-app-b7ed2.firebaseapp.com",
@@ -30,15 +29,11 @@
     <style>
         :root { --neon: #00FF41; --bg: #000000; }
         body { background-color: var(--bg); color: var(--neon); font-family: sans-serif; overflow: hidden; margin: 0; }
-        
         .neon-logo { font-size: 5rem; font-weight: 900; font-style: italic; color: var(--neon); text-shadow: 0 0 20px var(--neon); line-height: 1; letter-spacing: -4px; text-align: center; }
-        .glass-card { background: rgba(0, 255, 65, 0.05); border: 2px solid var(--neon); backdrop-filter: blur(12px); border-radius: 2rem; box-shadow: 0 0 30px rgba(0, 255, 65, 0.1); }
+        .glass-card { background: rgba(0, 255, 65, 0.05); border: 2px solid var(--neon); backdrop-filter: blur(12px); border-radius: 2rem; }
         .neo-btn { background-color: var(--neon); color: #000; font-weight: 900; box-shadow: 0 0 15px var(--neon); transition: all 0.2s; text-transform: uppercase; }
-        .neo-btn:active { transform: scale(0.95); }
-        
         .bar-bg { width: 100%; background: rgba(255,255,255,0.1); height: 14px; border-radius: 20px; border: 1px solid var(--neon); overflow: hidden; margin: 10px 0; }
-        .bar-fill { height: 100%; background: var(--neon); width: 0%; transition: width 1s ease-in-out; box-shadow: 0 0 15px var(--neon); }
-
+        .bar-fill { height: 100%; background: var(--neon); width: 0%; transition: width 1s ease-in-out; }
         input { background: #0a0a0a !important; border: 1px solid var(--neon) !important; color: white !important; padding: 16px !important; border-radius: 14px; width: 100%; outline: none; margin-bottom: 1rem; }
     </style>
 </head>
@@ -48,13 +43,10 @@
         <div class="w-full max-w-md">
             <div class="neon-logo">IOU</div>
             <h1 id="authTitle" class="text-xl font-black mb-8 tracking-widest uppercase">IOU Log In</h1>
-            
             <div id="loginForm" class="glass-card p-10">
                 <input type="email" id="email" placeholder="EMAIL ADDRESS">
                 <input type="password" id="pass" placeholder="PASSWORD">
-                
                 <button onclick="handleAuth()" id="mainBtn" class="neo-btn w-full py-5 rounded-2xl mb-6 text-lg">Connect</button>
-                
                 <button onclick="toggleAuthMode()" id="toggleBtn" class="text-[10px] font-black underline uppercase opacity-60">Enroll New Account</button>
             </div>
         </div>
@@ -68,17 +60,14 @@
             </div>
             <button onclick="auth.signOut().then(()=>location.reload())" class="text-[9px] font-black border border-[#00FF41]/30 px-4 py-2 rounded-full">LOGOUT</button>
         </header>
-
         <main class="flex-1 p-6 flex items-center justify-center">
             <div class="glass-card p-12 w-full max-w-sm text-center">
                 <p class="text-[10px] font-bold uppercase opacity-40 mb-2">Current Credit Balance</p>
                 <h2 id="balanceText" class="text-7xl font-black text-white mb-8">$0.00</h2>
-                
                 <div class="mb-10 text-left">
                     <p class="text-[9px] font-black uppercase mb-1">Savings Goal: $500.00</p>
                     <div class="bar-bg"><div id="goalBar" class="bar-fill"></div></div>
                 </div>
-
                 <button onclick="deposit(50)" class="neo-btn w-full py-5 rounded-2xl">Deposit $50</button>
             </div>
         </main>
@@ -86,46 +75,37 @@
 
     <script>
         let isSignUp = false;
-        const GOAL = 500;
-
         function toggleAuthMode() {
             isSignUp = !isSignUp;
-            // Updated dynamic titles
             document.getElementById('authTitle').innerText = isSignUp ? "IOU Sign Up" : "IOU Log In";
             document.getElementById('mainBtn').innerText = isSignUp ? "Enroll" : "Connect";
             document.getElementById('toggleBtn').innerText = isSignUp ? "Have an account? Log In" : "Enroll New Account";
         }
-
         async function handleAuth() {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('pass').value;
-            if(!email || !pass) return alert("Please fill in all fields.");
-
             try {
                 if(isSignUp) {
                     const uc = await auth.createUserWithEmailAndPassword(email, pass);
                     await uc.user.sendEmailVerification();
-                    alert("Account Created! Please check your email and click the verification link before logging in.");
+                    alert("Account Created! Check your email to verify.");
                 } else {
                     const uc = await auth.signInWithEmailAndPassword(email, pass);
                     if(uc.user.emailVerified) startApp(uc.user);
-                    else alert("Access Denied: Please verify your email first.");
+                    else alert("Verification Required.");
                 }
-            } catch (err) { alert("System Error: " + err.message); }
+            } catch (err) { alert("Error: " + err.message); }
         }
-
         function startApp(user) {
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
             document.getElementById('userNameDisplay').innerText = user.email.split('@')[0];
-            
             db.ref('users/' + user.uid).on('value', (snap) => {
                 const data = snap.val() || { balance: 0 };
                 document.getElementById('balanceText').innerText = `$${data.balance.toFixed(2)}`;
-                document.getElementById('goalBar').style.width = Math.min((data.balance / GOAL) * 100, 100) + "%";
+                document.getElementById('goalBar').style.width = Math.min((data.balance / 500) * 100, 100) + "%";
             });
         }
-
         function deposit(val) {
             const user = auth.currentUser;
             const ref = db.ref('users/' + user.uid);
@@ -134,7 +114,6 @@
                 ref.update({ balance: current + val });
             });
         }
-
         auth.onAuthStateChanged(u => { if(u && u.emailVerified) startApp(u); });
     </script>
 </body>
