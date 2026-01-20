@@ -11,7 +11,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
-        // CRITICAL FIX: I have corrected the V and Z in your apiKey based on your screenshot
+        // CLEANED CONFIG - NO HIDDEN SPACES
         const firebaseConfig = {
             apiKey: "AIzaSyC_089rLpoYzvZ4ERKBMirOIGhOwwulCIs",
             authDomain: "iou-app-b7ed2.firebaseapp.com",
@@ -30,82 +30,49 @@
     <style>
         :root { --neon: #00FF41; --bg: #000000; }
         body { background-color: var(--bg); color: var(--neon); font-family: sans-serif; overflow: hidden; margin: 0; }
-        
-        /* PURE TEXT LOGO - NO IMAGE TAGS AT ALL */
-        .neon-logo { 
-            font-size: 5.5rem; font-weight: 900; font-style: italic; 
-            color: var(--neon); text-shadow: 0 0 20px var(--neon);
-            line-height: 1; margin-bottom: 1.5rem; letter-spacing: -4px;
-        }
-
+        .neon-logo { font-size: 5rem; font-weight: 900; font-style: italic; color: var(--neon); text-shadow: 0 0 20px var(--neon); line-height: 1; margin-bottom: 1.5rem; letter-spacing: -4px; text-align: center; }
         .glass { background: rgba(0, 255, 65, 0.05); border: 2px solid var(--neon); backdrop-filter: blur(10px); border-radius: 2.5rem; }
-        .neo-btn { background-color: var(--neon); color: #000; font-weight: 900; box-shadow: 0 0 15px var(--neon); text-transform: uppercase; }
-        
-        .progress-container { width: 100%; background: rgba(255,255,255,0.1); height: 12px; border-radius: 10px; overflow: hidden; margin-top: 10px; border: 1px solid var(--neon); }
-        .progress-fill { height: 100%; background: var(--neon); width: 0%; transition: width 0.8s ease; box-shadow: 0 0 10px var(--neon); }
-
-        .page { display: none; height: 100vh; width: 100vw; }
-        .page.active { display: flex; flex-direction: column; }
-        input { background: #0a0a0a !important; border: 1px solid var(--neon) !important; color: white !important; padding: 14px !important; border-radius: 12px; width: 100%; outline: none; }
+        .neo-btn { background-color: var(--neon); color: #000; font-weight: 900; box-shadow: 0 0 15px var(--neon); text-transform: uppercase; width: 100%; padding: 1.25rem; border-radius: 1rem; }
+        input { background: #0a0a0a !important; border: 1px solid var(--neon) !important; color: white !important; padding: 14px !important; border-radius: 12px; width: 100%; outline: none; margin-bottom: 1rem; }
     </style>
 </head>
 <body>
 
-    <div id="authSection" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center p-6 text-center">
+    <div id="authSection" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center p-6">
         <div class="w-full max-w-md">
             <div class="neon-logo">IOU</div>
-            <h1 class="text-xl font-black mb-8 tracking-widest uppercase">Finance Assistance</h1>
-            
+            <h1 class="text-center text-xl font-black mb-8 tracking-widest uppercase">Finance Assistance</h1>
             <div id="loginForm" class="glass p-10">
-                <input type="email" id="email" placeholder="USER EMAIL" class="mb-4 font-bold">
-                <input type="password" id="pass" placeholder="PASSWORD" class="mb-6 font-bold">
-                <button onclick="handleAuth()" id="mainBtn" class="w-full neo-btn py-5 rounded-2xl mb-6">Connect</button>
-                <button onclick="toggleAuthMode()" id="toggleBtn" class="text-[10px] font-black underline uppercase">Enroll New Account</button>
-            </div>
-
-            <div id="msgBox" class="hidden glass p-10 mt-4">
-                <p id="msgContent" class="text-sm font-bold uppercase mb-6"></p>
-                <button onclick="location.reload()" class="neo-btn px-10 py-3 rounded-xl text-xs">REBOOT</button>
+                <input type="email" id="email" placeholder="EMAIL">
+                <input type="password" id="pass" placeholder="PASSWORD">
+                <button onclick="handleAuth()" id="mainBtn" class="neo-btn mb-6">Connect</button>
+                <div class="text-center">
+                    <button onclick="toggleAuthMode()" id="toggleBtn" class="text-[10px] font-black underline uppercase">Enroll New Account</button>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="app" class="hidden h-screen flex flex-col">
         <header class="p-6 border-b border-[#00FF41]/20 flex justify-between items-center bg-black">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg border-2 border-[#00FF41] flex items-center justify-center text-[10px] font-black">IOU</div>
-                <p id="hName" class="font-black text-xs uppercase tracking-widest">USER</p>
-            </div>
+            <p id="hName" class="font-black text-xs uppercase tracking-widest">USER</p>
             <button onclick="auth.signOut().then(()=>location.reload())" class="text-[9px] font-black border border-[#00FF41]/30 px-4 py-2 rounded-full">LOGOUT</button>
         </header>
-
         <main class="flex-1 p-6 flex items-center justify-center">
-            <div class="glass p-10 w-full max-w-sm text-center border-2 border-[#00FF41]">
-                <p class="text-[10px] font-bold uppercase opacity-40 mb-2">Available Credits</p>
+            <div class="glass p-10 w-full max-w-sm text-center">
                 <h2 id="bal" class="text-6xl font-black text-white mb-6">$0.00</h2>
-                
-                <div class="mb-8">
-                    <p class="text-[9px] font-black uppercase mb-1">Goal Progress: $500.00</p>
-                    <div class="progress-container">
-                        <div id="goalFill" class="progress-fill"></div>
-                    </div>
-                </div>
-
-                <button onclick="addCredit()" class="neo-btn w-full py-4 rounded-2xl">Deposit $50</button>
+                <button onclick="addCredit()" class="neo-btn">Deposit $50</button>
             </div>
         </main>
     </div>
 
     <script>
         let isSignUp = false;
-        const GOAL_AMOUNT = 500;
-
         function toggleAuthMode() {
             isSignUp = !isSignUp;
             document.getElementById('mainBtn').innerText = isSignUp ? "Enroll" : "Connect";
-            document.getElementById('toggleBtn').innerText = isSignUp ? "Already Registered? Login" : "Enroll New Account";
+            document.getElementById('toggleBtn').innerText = isSignUp ? "Back to Login" : "Enroll New Account";
         }
-
         async function handleAuth() {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('pass').value;
@@ -113,43 +80,24 @@
                 if(isSignUp) {
                     const uc = await auth.createUserWithEmailAndPassword(email, pass);
                     await uc.user.sendEmailVerification();
-                    showMsg("Enrollment Dispatched", "Check email inbox for activation link.");
+                    alert("Verification email sent!");
                 } else {
                     const uc = await auth.signInWithEmailAndPassword(email, pass);
                     if(uc.user.emailVerified) launchApp(uc.user);
-                    else { alert("Security: Verification Required"); auth.signOut(); }
+                    else alert("Please verify your email.");
                 }
-            } catch (err) { alert("Access Denied: " + err.message); }
+            } catch (err) { alert(err.message); }
         }
-
         function launchApp(user) {
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
-            document.getElementById('hName').innerText = user.email.split('@')[0];
-            
-            db.ref('users/' + user.uid).on('value', (snap) => {
-                const data = snap.val() || { balance: 0 };
-                document.getElementById('bal').innerText = `$${data.balance.toFixed(2)}`;
-                const percent = Math.min((data.balance / GOAL_AMOUNT) * 100, 100);
-                document.getElementById('goalFill').style.width = percent + "%";
-            });
+            document.getElementById('hName').innerText = user.email;
         }
-
         function addCredit() {
-            const user = auth.currentUser;
-            const ref = db.ref('users/' + user.uid);
-            ref.once('value').then((snap) => {
-                const currentBal = (snap.val() && snap.val().balance) || 0;
-                ref.update({ balance: currentBal + 50 });
-            });
+            let b = document.getElementById('bal');
+            let val = parseFloat(b.innerText.replace('$', ''));
+            b.innerText = `$${(val + 50).toFixed(2)}`;
         }
-
-        function showMsg(title, text) {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('msgBox').classList.remove('hidden');
-            document.getElementById('msgContent').innerHTML = `${title}<br><span class='opacity-50 lowercase'>${text}</span>`;
-        }
-
         auth.onAuthStateChanged(u => { if(u && u.emailVerified) launchApp(u); });
     </script>
 </body>
