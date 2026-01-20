@@ -1,0 +1,18 @@
+{
+  "short_name": "IOU",
+  "name": "IOU Premium Finance",
+  "description": "Secure Social Credit System",
+  "icons": [
+    {
+      "src": "https://i.postimg.cc/8z9X689C/IOU-LOGO-CUSTOM.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#000000",
+  "background_color": "#000000"
+}
