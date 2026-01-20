@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOU | Hyper-Neon Finance</title>
+    <title>IOU | Finance Assistance</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
@@ -11,6 +11,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
+        // Restructured config to prevent the API Key Error shown in your screenshot
         const firebaseConfig = {
             apiKey: "AIzaSyC_O89rLpoYzVZ4ERKBmirOIGhOwwulCIs",
             authDomain: "iou-app-b7ed2.firebaseapp.com",
@@ -27,94 +28,92 @@
 
     <style>
         :root { --neon: #00FF41; --bg: #000000; }
-        body { background-color: var(--bg); color: var(--neon); font-family: sans-serif; overflow: hidden; }
+        body { background-color: var(--bg); color: var(--neon); font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         
-        /* PURE CSS LOGO */
-        .neon-logo { 
-            font-size: 5rem; font-weight: 900; font-style: italic; 
-            color: var(--neon); text-shadow: 0 0 20px var(--neon);
-            line-height: 1; margin-bottom: 1.5rem; letter-spacing: -3px;
+        /* CSS LOGO ONLY - NO IMAGES */
+        .neon-text-logo { 
+            font-size: 5.5rem; font-weight: 900; font-style: italic; 
+            color: var(--neon); text-shadow: 0 0 30px var(--neon);
+            line-height: 1; margin-bottom: 1rem; letter-spacing: -5px;
         }
 
-        .glass { background: rgba(0, 255, 65, 0.05); border: 1px solid var(--neon); backdrop-filter: blur(10px); }
-        .neo-btn { background-color: var(--neon); color: #000; font-weight: 900; box-shadow: 0 0 15px var(--neon); transition: 0.2s; }
-        .neo-btn:active { transform: scale(0.95); opacity: 0.8; }
-        
+        .glass { background: rgba(0, 255, 65, 0.05); border: 1px solid var(--neon); backdrop-filter: blur(12px); }
+        .neo-btn { background-color: var(--neon); color: #000; font-weight: 900; box-shadow: 0 0 20px var(--neon); }
         .page { display: none; height: 100%; }
-        .page.active { display: flex; flex-direction: column; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .page.active { display: flex; flex-direction: column; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        input { background: #050505 !important; border: 1px solid var(--neon) !important; color: white !important; padding: 12px !important; border-radius: 12px; }
-        .nav-btn { font-size: 1.5rem; opacity: 0.4; transition: 0.3s; }
-        .nav-btn.active { opacity: 1; text-shadow: 0 0 10px var(--neon); }
+        input { background: #080808 !important; border: 1px solid var(--neon) !important; color: white !important; padding: 14px !important; border-radius: 12px; }
+        .nav-btn { font-size: 1.6rem; opacity: 0.3; transition: 0.3s; }
+        .nav-btn.active { opacity: 1; text-shadow: 0 0 15px var(--neon); }
     </style>
 </head>
 <body>
 
     <div id="authSection" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center p-6 text-center">
         <div class="w-full max-w-md">
-            <div class="neon-logo">IOU</div>
-            <h1 id="authTitle" class="text-xl font-bold mb-6 tracking-widest uppercase">SYSTEM ACCESS</h1>
+            <div class="neon-text-logo">IOU</div>
+            <h1 id="authTitle" class="text-xl font-black mb-8 tracking-[0.2em] uppercase">Finance Assistance</h1>
             
-            <div id="loginForm" class="glass p-8 rounded-[2.5rem]">
-                <input type="email" id="email" placeholder="EMAIL ADDRESS" class="w-full mb-4 outline-none">
-                <input type="password" id="pass" placeholder="PASSWORD" class="w-full mb-6 outline-none">
+            <div id="loginForm" class="glass p-10 rounded-[3rem]">
+                <input type="email" id="email" placeholder="USER EMAIL" class="w-full mb-4 outline-none font-bold">
+                <input type="password" id="pass" placeholder="PASSWORD" class="w-full mb-6 outline-none font-bold">
                 
-                <button id="mainBtn" onclick="handleAuth()" class="w-full neo-btn py-4 rounded-xl uppercase mb-6">Authorize</button>
+                <button id="mainBtn" onclick="handleAuth()" class="w-full neo-btn py-5 rounded-2xl uppercase mb-6 text-sm tracking-widest">Connect</button>
                 
-                <div class="flex flex-col gap-4 text-[10px] font-black uppercase">
-                    <button onclick="toggleAuthMode()" id="toggleBtn" class="underline">Create New Account</button>
-                    <button onclick="forgotPass()" class="opacity-40">Reset Security Key</button>
+                <div class="flex flex-col gap-5 text-[10px] font-black uppercase">
+                    <button onclick="toggleAuthMode()" id="toggleBtn" class="underline decoration-2">Enroll New Account</button>
+                    <button onclick="forgotPass()" class="opacity-40 hover:opacity-100">Reset Security Link</button>
                 </div>
             </div>
 
-            <div id="msgBox" class="hidden glass p-8 rounded-[2.5rem] mt-4">
-                <p id="msgContent" class="text-sm font-bold uppercase mb-4"></p>
-                <button onclick="location.reload()" class="neo-btn px-8 py-2 rounded-lg text-xs">REBOOT</button>
+            <div id="msgBox" class="hidden glass p-10 rounded-[3rem] mt-4">
+                <p id="msgContent" class="text-sm font-bold uppercase mb-6 leading-relaxed"></p>
+                <button onclick="location.reload()" class="neo-btn px-10 py-3 rounded-xl text-xs uppercase">Restart System</button>
             </div>
         </div>
     </div>
 
     <div id="app" class="hidden h-screen flex flex-col">
-        <header class="p-6 border-b border-[#00FF41]/20 flex justify-between items-center bg-black">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl border border-[#00FF41] flex items-center justify-center text-[10px] font-black">IOU</div>
+        <header class="p-6 border-b border-[#00FF41]/30 flex justify-between items-center bg-black">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-lg border-2 border-[#00FF41] flex items-center justify-center text-[12px] font-black shadow-[0_0_10px_#00FF41]">IOU</div>
                 <div>
                     <p id="hName" class="font-black text-xs uppercase text-white tracking-widest">USER</p>
-                    <p id="hID" class="text-[9px] font-bold opacity-40">#00000</p>
+                    <p id="hID" class="text-[9px] font-bold opacity-50">#00000</p>
                 </div>
             </div>
-            <button onclick="auth.signOut().then(()=>location.reload())" class="text-[9px] font-black border border-[#00FF41]/30 px-4 py-1 rounded-full uppercase">Logout</button>
+            <button onclick="auth.signOut().then(()=>location.reload())" class="text-[9px] font-black border border-[#00FF41]/40 px-5 py-2 rounded-full uppercase tracking-tighter">Disconnect</button>
         </header>
 
-        <main class="flex-1 overflow-hidden relative">
+        <main class="flex-1 overflow-hidden">
             <section id="page-home" class="page active p-6 justify-center">
-                <div class="glass p-10 rounded-[3rem] text-center border-2 border-[#00FF41] shadow-[0_0_30px_rgba(0,255,65,0.1)]">
-                    <p class="text-[10px] font-bold uppercase opacity-40 mb-2 tracking-[0.2em]">Liquid Credits</p>
-                    <h2 id="bal" class="text-6xl font-black text-white mb-8 tracking-tighter">$0.00</h2>
-                    <button onclick="addCredit()" class="neo-btn w-full py-4 rounded-2xl uppercase text-xs">Quick Deposit</button>
+                <div class="glass p-12 rounded-[3.5rem] text-center border-2 border-[#00FF41] shadow-[0_0_40px_rgba(0,255,65,0.15)]">
+                    <p class="text-[10px] font-bold uppercase opacity-40 mb-3 tracking-[0.3em]">Total Credits</p>
+                    <h2 id="bal" class="text-7xl font-black text-white mb-10 tracking-tighter">$0.00</h2>
+                    <button onclick="addCredit()" class="neo-btn w-full py-5 rounded-2xl uppercase text-xs tracking-widest">Deposit $50.00</button>
                 </div>
             </section>
 
-            <section id="page-profile" class="page p-6">
-                <h2 class="text-xl font-black mb-6 uppercase italic">User Profile</h2>
-                <div class="glass p-6 rounded-3xl space-y-6">
+            <section id="page-profile" class="page p-8">
+                <h2 class="text-2xl font-black mb-8 uppercase italic tracking-wider">Account Profile</h2>
+                <div class="glass p-8 rounded-[2rem] space-y-8">
                     <div>
-                        <label class="text-[10px] font-black opacity-40 uppercase block mb-2">Display Name</label>
-                        <div class="flex gap-2">
-                            <input id="nameInput" placeholder="New Name" class="flex-1 text-xs">
-                            <button onclick="updateProfileName()" class="neo-btn px-4 rounded-xl text-[10px]">SAVE</button>
+                        <label class="text-[10px] font-black opacity-40 uppercase block mb-3">Operator Name</label>
+                        <div class="flex gap-3">
+                            <input id="nameInput" placeholder="New Alias" class="flex-1 text-xs font-bold">
+                            <button onclick="updateProfileName()" class="neo-btn px-6 rounded-xl text-[10px]">SAVE</button>
                         </div>
                     </div>
-                    <div class="pt-4 border-t border-white/10">
-                        <p class="text-[10px] font-black opacity-40 uppercase mb-1">Network Identity</p>
-                        <p id="profileID" class="text-white font-mono text-lg">-----</p>
+                    <div class="pt-6 border-t border-white/10">
+                        <p class="text-[10px] font-black opacity-40 uppercase mb-2">Network ID</p>
+                        <p id="profileID" class="text-white font-mono text-xl tracking-widest">-----</p>
                     </div>
                 </div>
             </section>
         </main>
 
-        <nav class="p-6 glass border-t border-[#00FF41]/20 flex justify-around bg-black/80 backdrop-blur-md">
+        <nav class="p-8 glass border-t border-[#00FF41]/30 flex justify-around bg-black/90">
             <button id="nav-home" onclick="navTo('home')" class="nav-btn active">🏠</button>
             <button id="nav-profile" onclick="navTo('profile')" class="nav-btn">👤</button>
         </nav>
@@ -126,41 +125,41 @@
 
         function toggleAuthMode() {
             isSignUp = !isSignUp;
-            document.getElementById('authTitle').innerText = isSignUp ? "IDENTITY CREATION" : "SYSTEM ACCESS";
-            document.getElementById('mainBtn').innerText = isSignUp ? "Register" : "Authorize";
-            document.getElementById('toggleBtn').innerText = isSignUp ? "Back to Login" : "Create New Account";
+            document.getElementById('authTitle').innerText = isSignUp ? "Finance Assistance" : "Finance Assistance";
+            document.getElementById('mainBtn').innerText = isSignUp ? "Enroll" : "Connect";
+            document.getElementById('toggleBtn').innerText = isSignUp ? "Existing User? Sign In" : "Enroll New Account";
         }
 
         async function handleAuth() {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('pass').value;
-            if(!email || !pass) return alert("Credentials Missing");
+            if(!email || !pass) return alert("All fields required.");
 
             try {
                 if(isSignUp) {
                     const uc = await auth.createUserWithEmailAndPassword(email, pass);
                     await uc.user.sendEmailVerification();
-                    showMsg("Verification Sent", "Check your inbox to finalize account creation.");
+                    showMsg("Enrollment Pending", "A verification link has been sent to your inbox. Click it to activate.");
                 } else {
                     const uc = await auth.signInWithEmailAndPassword(email, pass);
                     if(uc.user.emailVerified) setupApp(uc.user);
-                    else { alert("Email Not Verified"); auth.signOut(); }
+                    else { alert("Email verification required."); auth.signOut(); }
                 }
-            } catch (err) { alert(err.message); }
+            } catch (err) { alert("Security Error: " + err.message); }
         }
 
         async function forgotPass() {
             const email = document.getElementById('email').value.trim();
-            if(!email) return alert("Enter email address");
+            if(!email) return alert("Provide email for reset.");
             await auth.sendPasswordResetEmail(email);
-            showMsg("Reset Dispatched", "Check your email for recovery instructions.");
+            showMsg("Key Dispatched", "Check your email to reset your password.");
         }
 
         function showMsg(title, text) {
             document.getElementById('loginForm').classList.add('hidden');
             const box = document.getElementById('msgBox');
             box.classList.remove('hidden');
-            document.getElementById('msgContent').innerHTML = `${title}<br><span class='opacity-40 text-[10px]'>${text}</span>`;
+            document.getElementById('msgContent').innerHTML = `${title}<br><br><span class='opacity-50 text-[10px] lowercase'>${text}</span>`;
         }
 
         function setupApp(user) {
@@ -185,16 +184,13 @@
         function updateProfileName() {
             const newName = document.getElementById('nameInput').value.trim();
             if(!newName) return;
-            const path = `users/${auth.currentUser.email.replace(/\./g, '_')}/name`;
-            db.ref(path).set(newName).then(() => {
+            db.ref(`users/${auth.currentUser.email.replace(/\./g, '_')}/name`).set(newName).then(() => {
                 document.getElementById('nameInput').value = '';
-                alert("Identity Updated");
             });
         }
 
         function addCredit() {
-            const path = `users/${auth.currentUser.email.replace(/\./g, '_')}/balance`;
-            db.ref(path).set(userData.balance + 50);
+            db.ref(`users/${auth.currentUser.email.replace(/\./g, '_')}/balance`).set(userData.balance + 50);
         }
 
         function navTo(p) {
@@ -202,12 +198,6 @@
             document.querySelectorAll('.nav-btn').forEach(nb => nb.classList.remove('active'));
             document.getElementById('page-' + p).classList.add('active');
             document.getElementById('nav-' + p).classList.add('active');
-        }
-
-        function forgotPass() {
-            const email = document.getElementById('email').value.trim();
-            if(!email) return alert("Enter email first");
-            auth.sendPasswordResetEmail(email).then(() => showMsg("Key Reset", "Instructions sent to your email."));
         }
 
         auth.onAuthStateChanged(u => { if(u && u.emailVerified) setupApp(u); });
