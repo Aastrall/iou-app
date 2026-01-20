@@ -11,7 +11,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
-        // CLEANED CONFIG - NO HIDDEN SPACES
+        // FIXED KEYS - Manual verification of case sensitivity (V and Z)
         const firebaseConfig = {
             apiKey: "AIzaSyC_089rLpoYzvZ4ERKBMirOIGhOwwulCIs",
             authDomain: "iou-app-b7ed2.firebaseapp.com",
@@ -30,75 +30,112 @@
     <style>
         :root { --neon: #00FF41; --bg: #000000; }
         body { background-color: var(--bg); color: var(--neon); font-family: sans-serif; overflow: hidden; margin: 0; }
-        .neon-logo { font-size: 5rem; font-weight: 900; font-style: italic; color: var(--neon); text-shadow: 0 0 20px var(--neon); line-height: 1; margin-bottom: 1.5rem; letter-spacing: -4px; text-align: center; }
-        .glass { background: rgba(0, 255, 65, 0.05); border: 2px solid var(--neon); backdrop-filter: blur(10px); border-radius: 2.5rem; }
-        .neo-btn { background-color: var(--neon); color: #000; font-weight: 900; box-shadow: 0 0 15px var(--neon); text-transform: uppercase; width: 100%; padding: 1.25rem; border-radius: 1rem; }
-        input { background: #0a0a0a !important; border: 1px solid var(--neon) !important; color: white !important; padding: 14px !important; border-radius: 12px; width: 100%; outline: none; margin-bottom: 1rem; }
+        
+        .neon-logo { font-size: 5rem; font-weight: 900; font-style: italic; color: var(--neon); text-shadow: 0 0 20px var(--neon); line-height: 1; letter-spacing: -4px; text-align: center; }
+        .glass-card { background: rgba(0, 255, 65, 0.05); border: 2px solid var(--neon); backdrop-filter: blur(12px); border-radius: 2rem; box-shadow: 0 0 30px rgba(0, 255, 65, 0.1); }
+        .neo-btn { background-color: var(--neon); color: #000; font-weight: 900; box-shadow: 0 0 15px var(--neon); transition: all 0.2s; text-transform: uppercase; }
+        .neo-btn:active { transform: scale(0.95); }
+        
+        .bar-bg { width: 100%; background: rgba(255,255,255,0.1); height: 14px; border-radius: 20px; border: 1px solid var(--neon); overflow: hidden; margin: 10px 0; }
+        .bar-fill { height: 100%; background: var(--neon); width: 0%; transition: width 1s ease-in-out; box-shadow: 0 0 15px var(--neon); }
+
+        input { background: #0a0a0a !important; border: 1px solid var(--neon) !important; color: white !important; padding: 16px !important; border-radius: 14px; width: 100%; outline: none; margin-bottom: 1rem; }
     </style>
 </head>
 <body>
 
-    <div id="authSection" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center p-6">
+    <div id="authSection" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center p-6 text-center">
         <div class="w-full max-w-md">
             <div class="neon-logo">IOU</div>
-            <h1 class="text-center text-xl font-black mb-8 tracking-widest uppercase">Finance Assistance</h1>
-            <div id="loginForm" class="glass p-10">
-                <input type="email" id="email" placeholder="EMAIL">
+            <h1 id="authTitle" class="text-xl font-black mb-8 tracking-widest uppercase">IOU Log In</h1>
+            
+            <div id="loginForm" class="glass-card p-10">
+                <input type="email" id="email" placeholder="EMAIL ADDRESS">
                 <input type="password" id="pass" placeholder="PASSWORD">
-                <button onclick="handleAuth()" id="mainBtn" class="neo-btn mb-6">Connect</button>
-                <div class="text-center">
-                    <button onclick="toggleAuthMode()" id="toggleBtn" class="text-[10px] font-black underline uppercase">Enroll New Account</button>
-                </div>
+                
+                <button onclick="handleAuth()" id="mainBtn" class="neo-btn w-full py-5 rounded-2xl mb-6 text-lg">Connect</button>
+                
+                <button onclick="toggleAuthMode()" id="toggleBtn" class="text-[10px] font-black underline uppercase opacity-60">Enroll New Account</button>
             </div>
         </div>
     </div>
 
     <div id="app" class="hidden h-screen flex flex-col">
         <header class="p-6 border-b border-[#00FF41]/20 flex justify-between items-center bg-black">
-            <p id="hName" class="font-black text-xs uppercase tracking-widest">USER</p>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg border-2 border-[#00FF41] flex items-center justify-center text-[10px] font-black">IOU</div>
+                <p id="userNameDisplay" class="font-black text-xs uppercase tracking-widest">USER</p>
+            </div>
             <button onclick="auth.signOut().then(()=>location.reload())" class="text-[9px] font-black border border-[#00FF41]/30 px-4 py-2 rounded-full">LOGOUT</button>
         </header>
+
         <main class="flex-1 p-6 flex items-center justify-center">
-            <div class="glass p-10 w-full max-w-sm text-center">
-                <h2 id="bal" class="text-6xl font-black text-white mb-6">$0.00</h2>
-                <button onclick="addCredit()" class="neo-btn">Deposit $50</button>
+            <div class="glass-card p-12 w-full max-w-sm text-center">
+                <p class="text-[10px] font-bold uppercase opacity-40 mb-2">Current Credit Balance</p>
+                <h2 id="balanceText" class="text-7xl font-black text-white mb-8">$0.00</h2>
+                
+                <div class="mb-10 text-left">
+                    <p class="text-[9px] font-black uppercase mb-1">Savings Goal: $500.00</p>
+                    <div class="bar-bg"><div id="goalBar" class="bar-fill"></div></div>
+                </div>
+
+                <button onclick="deposit(50)" class="neo-btn w-full py-5 rounded-2xl">Deposit $50</button>
             </div>
         </main>
     </div>
 
     <script>
         let isSignUp = false;
+        const GOAL = 500;
+
         function toggleAuthMode() {
             isSignUp = !isSignUp;
+            // Updated dynamic titles
+            document.getElementById('authTitle').innerText = isSignUp ? "IOU Sign Up" : "IOU Log In";
             document.getElementById('mainBtn').innerText = isSignUp ? "Enroll" : "Connect";
-            document.getElementById('toggleBtn').innerText = isSignUp ? "Back to Login" : "Enroll New Account";
+            document.getElementById('toggleBtn').innerText = isSignUp ? "Have an account? Log In" : "Enroll New Account";
         }
+
         async function handleAuth() {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('pass').value;
+            if(!email || !pass) return alert("Please fill in all fields.");
+
             try {
                 if(isSignUp) {
                     const uc = await auth.createUserWithEmailAndPassword(email, pass);
                     await uc.user.sendEmailVerification();
-                    alert("Verification email sent!");
+                    alert("Account Created! Please check your email and click the verification link before logging in.");
                 } else {
                     const uc = await auth.signInWithEmailAndPassword(email, pass);
-                    if(uc.user.emailVerified) launchApp(uc.user);
-                    else alert("Please verify your email.");
+                    if(uc.user.emailVerified) startApp(uc.user);
+                    else alert("Access Denied: Please verify your email first.");
                 }
-            } catch (err) { alert(err.message); }
+            } catch (err) { alert("System Error: " + err.message); }
         }
-        function launchApp(user) {
+
+        function startApp(user) {
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
-            document.getElementById('hName').innerText = user.email;
+            document.getElementById('userNameDisplay').innerText = user.email.split('@')[0];
+            
+            db.ref('users/' + user.uid).on('value', (snap) => {
+                const data = snap.val() || { balance: 0 };
+                document.getElementById('balanceText').innerText = `$${data.balance.toFixed(2)}`;
+                document.getElementById('goalBar').style.width = Math.min((data.balance / GOAL) * 100, 100) + "%";
+            });
         }
-        function addCredit() {
-            let b = document.getElementById('bal');
-            let val = parseFloat(b.innerText.replace('$', ''));
-            b.innerText = `$${(val + 50).toFixed(2)}`;
+
+        function deposit(val) {
+            const user = auth.currentUser;
+            const ref = db.ref('users/' + user.uid);
+            ref.once('value').then((snap) => {
+                const current = (snap.val() && snap.val().balance) || 0;
+                ref.update({ balance: current + val });
+            });
         }
-        auth.onAuthStateChanged(u => { if(u && u.emailVerified) launchApp(u); });
+
+        auth.onAuthStateChanged(u => { if(u && u.emailVerified) startApp(u); });
     </script>
 </body>
 </html>
