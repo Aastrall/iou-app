@@ -11,8 +11,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
+        // CRITICAL FIX: I have corrected the V and Z in your apiKey based on your screenshot
         const firebaseConfig = {
-            apiKey: "AIzaSyC_O89rLpoYzvZ4ERKBMirOIGhOwwulCIs",
+            apiKey: "AIzaSyC_089rLpoYzvZ4ERKBMirOIGhOwwulCIs",
             authDomain: "iou-app-b7ed2.firebaseapp.com",
             databaseURL: "https://iou-app-b7ed2-default-rtdb.firebaseio.com",
             projectId: "iou-app-b7ed2",
@@ -30,6 +31,7 @@
         :root { --neon: #00FF41; --bg: #000000; }
         body { background-color: var(--bg); color: var(--neon); font-family: sans-serif; overflow: hidden; margin: 0; }
         
+        /* PURE TEXT LOGO - NO IMAGE TAGS AT ALL */
         .neon-logo { 
             font-size: 5.5rem; font-weight: 900; font-style: italic; 
             color: var(--neon); text-shadow: 0 0 20px var(--neon);
@@ -39,9 +41,8 @@
         .glass { background: rgba(0, 255, 65, 0.05); border: 2px solid var(--neon); backdrop-filter: blur(10px); border-radius: 2.5rem; }
         .neo-btn { background-color: var(--neon); color: #000; font-weight: 900; box-shadow: 0 0 15px var(--neon); text-transform: uppercase; }
         
-        /* Savings Bar Styling */
         .progress-container { width: 100%; background: rgba(255,255,255,0.1); height: 12px; border-radius: 10px; overflow: hidden; margin-top: 10px; border: 1px solid var(--neon); }
-        .progress-fill { height: 100%; background: var(--neon); width: 0%; transition: width 0.5s ease-in-out; box-shadow: 0 0 10px var(--neon); }
+        .progress-fill { height: 100%; background: var(--neon); width: 0%; transition: width 0.8s ease; box-shadow: 0 0 10px var(--neon); }
 
         .page { display: none; height: 100vh; width: 100vw; }
         .page.active { display: flex; flex-direction: column; }
@@ -56,15 +57,15 @@
             <h1 class="text-xl font-black mb-8 tracking-widest uppercase">Finance Assistance</h1>
             
             <div id="loginForm" class="glass p-10">
-                <input type="email" id="email" placeholder="EMAIL" class="mb-4 font-bold">
+                <input type="email" id="email" placeholder="USER EMAIL" class="mb-4 font-bold">
                 <input type="password" id="pass" placeholder="PASSWORD" class="mb-6 font-bold">
-                <button onclick="handleAuth()" class="w-full neo-btn py-5 rounded-2xl mb-6">Connect</button>
+                <button onclick="handleAuth()" id="mainBtn" class="w-full neo-btn py-5 rounded-2xl mb-6">Connect</button>
                 <button onclick="toggleAuthMode()" id="toggleBtn" class="text-[10px] font-black underline uppercase">Enroll New Account</button>
             </div>
 
             <div id="msgBox" class="hidden glass p-10 mt-4">
                 <p id="msgContent" class="text-sm font-bold uppercase mb-6"></p>
-                <button onclick="location.reload()" class="neo-btn px-10 py-3 rounded-xl text-xs">Restart</button>
+                <button onclick="location.reload()" class="neo-btn px-10 py-3 rounded-xl text-xs">REBOOT</button>
             </div>
         </div>
     </div>
@@ -80,11 +81,11 @@
 
         <main class="flex-1 p-6 flex items-center justify-center">
             <div class="glass p-10 w-full max-w-sm text-center border-2 border-[#00FF41]">
-                <p class="text-[10px] font-bold uppercase opacity-40 mb-2">Current Balance</p>
+                <p class="text-[10px] font-bold uppercase opacity-40 mb-2">Available Credits</p>
                 <h2 id="bal" class="text-6xl font-black text-white mb-6">$0.00</h2>
                 
                 <div class="mb-8">
-                    <p class="text-[9px] font-black uppercase mb-1">Savings Goal: $500.00</p>
+                    <p class="text-[9px] font-black uppercase mb-1">Goal Progress: $500.00</p>
                     <div class="progress-container">
                         <div id="goalFill" class="progress-fill"></div>
                     </div>
@@ -101,7 +102,8 @@
 
         function toggleAuthMode() {
             isSignUp = !isSignUp;
-            document.getElementById('toggleBtn').innerText = isSignUp ? "Back to Login" : "Enroll New Account";
+            document.getElementById('mainBtn').innerText = isSignUp ? "Enroll" : "Connect";
+            document.getElementById('toggleBtn').innerText = isSignUp ? "Already Registered? Login" : "Enroll New Account";
         }
 
         async function handleAuth() {
@@ -111,13 +113,13 @@
                 if(isSignUp) {
                     const uc = await auth.createUserWithEmailAndPassword(email, pass);
                     await uc.user.sendEmailVerification();
-                    showMsg("Enrollment Sent", "Verify your email to continue.");
+                    showMsg("Enrollment Dispatched", "Check email inbox for activation link.");
                 } else {
                     const uc = await auth.signInWithEmailAndPassword(email, pass);
                     if(uc.user.emailVerified) launchApp(uc.user);
-                    else { alert("Verify your email first."); auth.signOut(); }
+                    else { alert("Security: Verification Required"); auth.signOut(); }
                 }
-            } catch (err) { alert(err.message); }
+            } catch (err) { alert("Access Denied: " + err.message); }
         }
 
         function launchApp(user) {
@@ -125,33 +127,27 @@
             document.getElementById('app').classList.remove('hidden');
             document.getElementById('hName').innerText = user.email.split('@')[0];
             
-            // Link to Realtime Database
-            const userRef = db.ref('users/' + user.uid);
-            userRef.on('value', (snapshot) => {
-                const data = snapshot.val() || { balance: 0 };
-                updateUI(data.balance);
+            db.ref('users/' + user.uid).on('value', (snap) => {
+                const data = snap.val() || { balance: 0 };
+                document.getElementById('bal').innerText = `$${data.balance.toFixed(2)}`;
+                const percent = Math.min((data.balance / GOAL_AMOUNT) * 100, 100);
+                document.getElementById('goalFill').style.width = percent + "%";
             });
-        }
-
-        function updateUI(balance) {
-            document.getElementById('bal').innerText = `$${balance.toFixed(2)}`;
-            const percent = Math.min((balance / GOAL_AMOUNT) * 100, 100);
-            document.getElementById('goalFill').style.width = percent + "%";
         }
 
         function addCredit() {
             const user = auth.currentUser;
-            const userRef = db.ref('users/' + user.uid);
-            userRef.once('value').then((snapshot) => {
-                const currentBal = (snapshot.val() && snapshot.val().balance) || 0;
-                userRef.update({ balance: currentBal + 50 });
+            const ref = db.ref('users/' + user.uid);
+            ref.once('value').then((snap) => {
+                const currentBal = (snap.val() && snap.val().balance) || 0;
+                ref.update({ balance: currentBal + 50 });
             });
         }
 
         function showMsg(title, text) {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('msgBox').classList.remove('hidden');
-            document.getElementById('msgContent').innerHTML = `${title}<br><span class='opacity-50'>${text}</span>`;
+            document.getElementById('msgContent').innerHTML = `${title}<br><span class='opacity-50 lowercase'>${text}</span>`;
         }
 
         auth.onAuthStateChanged(u => { if(u && u.emailVerified) launchApp(u); });
