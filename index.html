@@ -35,28 +35,36 @@
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .avatar-circle { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #39FF14; box-shadow: 0 0 10px rgba(57, 255, 20, 0.2); }
+        .avatar-circle { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #39FF14; }
         .chat-img { max-width: 220px; border-radius: 12px; border: 1px solid #39FF14; margin-top: 5px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         input { background: #111 !important; border: 1px solid #333 !important; color: #39FF14 !important; }
+        #splashScreen { background: #000; display: flex; align-items: center; justify-content: center; position: fixed; inset: 0; z-index: 9999; transition: opacity 0.5s ease; }
     </style>
 </head>
 <body class="min-h-screen">
+
+    <div id="splashScreen">
+        <div class="text-center">
+            <img src="https://i.postimg.cc/8z9X689C/IOU-LOGO-CUSTOM.png" class="w-48 h-48 animate-pulse rounded-3xl mb-4">
+            <p class="text-[#39FF14] font-black tracking-[0.5em] text-[10px] animate-pulse">BOOTING SYSTEM</p>
+        </div>
+    </div>
 
     <input type="file" id="profilePicker" accept="image/*" class="hidden" onchange="handleImgUpload(this, 'profile')">
     <input type="file" id="chatMsgPicker" accept="image/*" class="hidden" onchange="handleImgUpload(this, 'chat')">
 
     <div id="authSection" class="fixed inset-0 z-[5000] bg-black flex items-center justify-center p-6 text-center">
         <div class="w-full max-w-md">
-            <img src="https://i.postimg.cc/8z9X689C/IOU-LOGO-CUSTOM.png" class="w-24 h-24 mx-auto mb-6 rounded-3xl">
-            <h1 class="text-2xl font-black italic mb-8 tracking-widest text-[#39FF14]">IOU PROTOCOL</h1>
-            <div id="loginForm" class="glass p-8 rounded-3xl">
+            <img src="https://i.postimg.cc/8z9X689C/IOU-LOGO-CUSTOM.png" class="w-40 h-40 mx-auto mb-6 rounded-3xl shadow-[0_0_30px_rgba(57,255,20,0.2)]">
+            <h1 class="text-2xl font-black italic mb-8 tracking-widest text-[#39FF14]">IOU SIGN IN</h1>
+            <div id="loginForm" class="glass p-8 rounded-3xl border border-[#39FF14]/30">
                 <input type="email" id="emailInput" placeholder="SYSTEM EMAIL" class="w-full p-4 rounded-xl mb-4 text-xs font-bold uppercase">
                 <input type="password" id="passInput" placeholder="ACCESS KEY" class="w-full p-4 rounded-xl mb-6 text-xs font-bold uppercase">
-                <button onclick="handleAuth()" class="w-full neo-btn py-4 rounded-xl uppercase font-black">Authorize</button>
+                <button onclick="handleAuth()" class="w-full neo-btn py-4 rounded-xl uppercase font-black">Authorize Session</button>
             </div>
             <div id="verifyPrompt" class="hidden glass p-8 rounded-3xl">
-                <p class="text-xs font-black mb-4 uppercase">Verification Required - Check Email</p>
+                <p class="text-xs font-black mb-4 uppercase">Verification Link Sent</p>
                 <button onclick="location.reload()" class="w-full neo-btn py-4 rounded-xl font-black text-xs uppercase">Check Status</button>
             </div>
         </div>
@@ -71,28 +79,28 @@
                     <p id="headerID" class="text-[9px] font-bold opacity-40">#ID</p>
                 </div>
             </div>
-            <button onclick="auth.signOut().then(() => location.reload())" class="text-[9px] font-black border border-zinc-800 px-3 py-1 rounded-lg">DISCONNECT</button>
+            <button onclick="auth.signOut().then(() => location.reload())" class="text-[9px] font-black border border-zinc-800 px-3 py-1 rounded-lg text-[#39FF14]">EXIT</button>
         </header>
 
         <main class="flex-1 overflow-y-auto px-6 pb-32 no-scrollbar">
             <section id="page-home" class="page active">
-                <div class="mt-6 p-8 rounded-3xl border-2 border-[#39FF14] bg-black mb-8 shadow-[0_0_20px_rgba(57,255,20,0.1)]">
-                    <p class="text-[10px] font-black uppercase opacity-50 mb-1 tracking-widest">Liquid Credits</p>
+                <div class="mt-6 p-8 rounded-3xl border-2 border-[#39FF14] bg-black mb-8 shadow-[0_0_20px_rgba(57,255,20,0.1)] text-center">
+                    <p class="text-[10px] font-black uppercase opacity-50 mb-1 tracking-widest text-[#39FF14]">Total Credits</p>
                     <p id="totalDisplay" class="text-5xl font-black text-white font-mono tracking-tighter">$0.00</p>
                 </div>
                 <div class="grid grid-cols-4 gap-4 mb-10 text-center">
-                    <button onclick="navTo('addCard')">💳<br><span class="text-[8px] font-black">ADD</span></button>
-                    <button onclick="navTo('friends')">🤝<br><span class="text-[8px] font-black">PAY</span></button>
-                    <button onclick="navTo('savings')">🎯<br><span class="text-[8px] font-black">SAVE</span></button>
-                    <button onclick="navTo('friends')">💬<br><span class="text-[8px] font-black">CHAT</span></button>
+                    <button onclick="navTo('addCard')" class="text-2xl">💳<br><span class="text-[8px] font-black">ADD</span></button>
+                    <button onclick="navTo('friends')" class="text-2xl">🤝<br><span class="text-[8px] font-black">PAY</span></button>
+                    <button onclick="navTo('savings')" class="text-2xl">🎯<br><span class="text-[8px] font-black">SAVE</span></button>
+                    <button onclick="navTo('friends')" class="text-2xl">💬<br><span class="text-[8px] font-black">CHAT</span></button>
                 </div>
-                <h3 class="text-[10px] font-black opacity-30 mb-4 tracking-[0.2em] uppercase">Active Channels</h3>
+                <h3 class="text-[10px] font-black opacity-30 mb-4 tracking-[0.2em] uppercase">Network Status</h3>
                 <div id="friendsListContainer" class="space-y-4"></div>
             </section>
 
             <section id="page-friends" class="page">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-black italic uppercase">Network</h2>
+                    <h2 class="text-xl font-black italic uppercase">Connections</h2>
                     <button onclick="createNewGroup()" class="text-[9px] border border-[#39FF14] px-4 py-1 rounded-full font-black text-[#39FF14] uppercase">Create Group</button>
                 </div>
                 <div class="glass p-4 rounded-2xl mb-6 flex gap-2">
@@ -100,24 +108,23 @@
                     <button onclick="sendFriendRequest()" class="neo-btn px-6 rounded-xl font-black">+</button>
                 </div>
                 <div id="friendsPageContainer" class="space-y-4 mb-10"></div>
-                <h3 class="text-[10px] font-black opacity-30 mb-4 tracking-widest uppercase">Groups</h3>
                 <div id="groupsListContainer" class="space-y-4"></div>
             </section>
 
-            <section id="page-addCard" class="page">
-                <h2 class="text-xl font-black italic mb-6 uppercase">Authorize Fund</h2>
-                <button onclick="processDeposit()" class="w-full neo-btn py-5 rounded-2xl font-black uppercase shadow-[0_0_20px_#39ff1444]">Add $50.00 Credit</button>
+            <section id="page-addCard" class="page text-center pt-10">
+                <h2 class="text-xl font-black italic mb-6 uppercase">Authorize Deposit</h2>
+                <button onclick="processDeposit()" class="w-full neo-btn py-5 rounded-2xl font-black uppercase">Add $50.00</button>
             </section>
 
             <section id="page-savings" class="page">
                 <div class="glass p-8 rounded-3xl mb-8 text-center border-2 border-[#39FF14]">
-                    <h2 id="goalName" class="text-xl font-black mb-2 uppercase tracking-tighter">TARGET</h2>
+                    <h2 id="goalName" class="text-xl font-black mb-2 uppercase">GOAL</h2>
                     <p id="goalAmountDisplay" class="text-2xl font-mono text-white">$0 / $0</p>
                     <div class="w-full bg-zinc-900 h-2 rounded-full mt-6 overflow-hidden">
                         <div id="goalBar" class="bg-[#39FF14] h-full" style="width: 0%"></div>
                     </div>
                 </div>
-                <button onclick="setNewGoal()" class="w-full glass py-4 rounded-xl font-black text-[9px] uppercase tracking-widest">Update Savings Goal</button>
+                <button onclick="setNewGoal()" class="w-full glass py-4 rounded-xl font-black text-[9px] uppercase tracking-widest">Edit Target</button>
             </section>
         </main>
 
@@ -130,18 +137,18 @@
 
     <div id="chatModal" class="hidden fixed inset-0 bg-black z-[6000] flex flex-col">
         <header class="p-6 border-b border-zinc-900 flex justify-between items-center">
-            <div onclick="showMemberList()" class="cursor-pointer">
+            <div>
                 <h2 id="chatFriendName" class="font-black italic text-[#39FF14] uppercase text-sm">CHANNEL</h2>
                 <p id="chatFriendStatus" class="text-[8px] font-black text-[#39FF14] opacity-60 uppercase"></p>
             </div>
-            <button onclick="closeChat()" class="text-white text-[10px] font-black border border-zinc-800 px-3 py-1 rounded">CLOSE</button>
+            <button onclick="closeChat()" class="text-white text-[10px] font-black px-3 py-1 rounded border border-white/20">CLOSE</button>
         </header>
         <div id="chatMessages" class="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar"></div>
         <div id="typingIndicator" class="px-6 pb-2 text-[10px] font-bold italic text-[#39FF14] opacity-0 transition-opacity">Typing...</div>
         <div class="p-6 bg-black border-t border-zinc-900">
             <div class="flex gap-2 items-center">
-                <button onclick="document.getElementById('chatMsgPicker').click()" class="p-3 glass rounded-xl">📷</button>
-                <input type="text" id="chatInput" placeholder="Write transmission..." oninput="updateTypingStatus()" class="flex-1 p-4 rounded-xl text-xs">
+                <button onclick="document.getElementById('chatMsgPicker').click()" class="p-3 glass rounded-xl text-lg">📷</button>
+                <input type="text" id="chatInput" placeholder="Message..." oninput="updateTypingStatus()" class="flex-1 p-4 rounded-xl text-xs">
                 <button onclick="sendMessage('text')" class="neo-btn px-6 py-4 rounded-xl font-black text-[10px]">SEND</button>
             </div>
         </div>
@@ -154,7 +161,14 @@
         let typingTimeout = null;
         let nicknames = JSON.parse(localStorage.getItem('iou_nicknames') || '{}');
 
-        // --- AUTH & INITIALIZATION ---
+        window.onload = () => {
+            setTimeout(() => {
+                const ss = document.getElementById('splashScreen');
+                ss.style.opacity = '0';
+                setTimeout(() => ss.style.display = 'none', 500);
+            }, 2000);
+        };
+
         async function handleAuth() {
             const e = document.getElementById('emailInput').value.trim();
             const p = document.getElementById('passInput').value;
@@ -162,7 +176,7 @@
             try {
                 const uc = await auth.signInWithEmailAndPassword(e, p);
                 if (uc.user.emailVerified) { initializeUser(uc.user); }
-                else { alert("Verify Email"); auth.signOut(); }
+                else { alert("Please verify your email."); auth.signOut(); }
             } catch (err) {
                 if (err.code === 'auth/user-not-found') {
                     const nu = await auth.createUserWithEmailAndPassword(e, p);
@@ -190,25 +204,21 @@
             });
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('appContent').classList.remove('hidden');
-            setInterval(updatePresence, 30000);
         }
 
-        // --- MEDIA HANDLING ---
         function handleImgUpload(input, target) {
             const file = input.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = (e) => {
                 const img = new Image();
-                img.onload = function() {
+                img.onload = () => {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     const max = target === 'profile' ? 200 : 500;
                     let w = img.width, h = img.height;
-                    if (w > max || h > max) {
-                        if (w > h) { h *= max / w; w = max; }
-                        else { w *= max / h; h = max; }
-                    }
+                    if (w > h) { if (w > max) { h *= max/w; w = max; } }
+                    else { if (h > max) { w *= max/h; h = max; } }
                     canvas.width = w; canvas.height = h;
                     ctx.drawImage(img, 0, 0, w, h);
                     const base64 = canvas.toDataURL('image/jpeg', 0.6);
@@ -225,7 +235,6 @@
             await db.ref(`users/${safe}/profilePic`).set(base64);
         }
 
-        // --- CHAT & LIVE STATUS ---
         function updatePresence() {
             if(!userData) return;
             db.ref(`users/${userData.email.replace(/\./g, '_')}/lastSeen`).set(Date.now());
@@ -248,8 +257,6 @@
             const i = document.getElementById('chatInput');
             if(type === 'text' && !i.value) return;
             const path = activeChatType === 'private' ? `chats/${[userData.lendID, activeChatFriend].sort().join('_')}` : `groupChats/${activeChatFriend}`;
-            
-            // Clear typing status on send
             const chatID = activeChatType === 'private' ? [userData.lendID, activeChatFriend].sort().join('_') : activeChatFriend;
             db.ref(`typing/${chatID}/${userData.lendID}`).set(false);
 
@@ -272,29 +279,21 @@
             const chatID = type === 'private' ? [userData.lendID, id].sort().join('_') : id;
             document.getElementById('chatModal').classList.remove('hidden');
             
-            // Header Info
             if(type === 'private') {
-                document.getElementById('chatFriendName').innerText = nicknames[id] || "CHANNEL: " + id;
+                document.getElementById('chatFriendName').innerText = nicknames[id] || id;
                 db.ref('users').orderByChild('lendID').equalTo(id).on('value', snap => {
                     const obj = Object.values(snap.val() || {})[0];
                     document.getElementById('chatFriendStatus').innerText = formatLastSeen(obj?.lastSeen);
                 });
-            } else {
-                db.ref(`groups/${id}`).once('value', s => {
-                    document.getElementById('chatFriendName').innerText = s.val().name;
-                    document.getElementById('chatFriendStatus').innerText = s.val().members.length + " MEMBERS";
-                });
             }
 
-            // Typing Indicator Listener
             db.ref(`typing/${chatID}`).on('value', snap => {
-                const typers = snap.val() || {};
+                const t = snap.val() || {};
                 let someoneTyping = false;
-                for(let uid in typers) if(uid !== userData.lendID && typers[uid] === true) someoneTyping = true;
+                for(let u in t) if(u !== userData.lendID && t[u] === true) someoneTyping = true;
                 document.getElementById('typingIndicator').style.opacity = someoneTyping ? '1' : '0';
             });
 
-            // Messages Listener
             const path = type === 'private' ? `chats/${chatID}` : `groupChats/${id}`;
             db.ref(path).on('value', snap => {
                 const box = document.getElementById('chatMessages'); box.innerHTML = '';
@@ -304,19 +303,18 @@
                 messages.forEach(m => {
                     const me = m.sender === userData.lendID;
                     if(!me && m.read === false) { m.read = true; updated = true; }
-                    
                     const status = me ? (m.read ? '✓✓' : '✓') : '';
-                    const avatar = m.senderPic ? `<img src="${m.senderPic}" class="w-7 h-7 rounded-full border border-[#39FF14]">` : `<div class="w-7 h-7 bg-[#39FF14] text-black rounded-full flex items-center justify-center text-[9px] font-black">${m.senderName[0]}</div>`;
+                    const avatar = m.senderPic ? `<img src="${m.senderPic}" class="w-7 h-7 rounded-full">` : `<div class="w-7 h-7 bg-[#39FF14] text-black rounded-full flex items-center justify-center text-[8px] font-black">${m.senderName[0]}</div>`;
                     let content = m.type === 'image' ? `<img src="${m.image}" class="chat-img">` : `<span>${m.text}</span>`;
                     
                     box.innerHTML += `<div class="flex flex-col ${me ? 'items-end' : 'items-start'}">
                         <div class="flex items-end gap-2 ${me ? 'flex-row-reverse' : ''}">
                             ${avatar}
-                            <div class="${me ? 'bg-[#39FF14] text-black shadow-[0_0_10px_rgba(57,255,20,0.2)]' : 'border border-[#39FF14] text-white'} px-4 py-2 rounded-2xl font-bold">
+                            <div class="${me ? 'bg-[#39FF14] text-black' : 'border border-[#39FF14] text-white'} px-4 py-2 rounded-2xl font-bold">
                                 ${content}
                             </div>
                         </div>
-                        <div class="text-[7px] mt-1 font-black opacity-30">${me ? status : m.senderName}</div>
+                        <div class="text-[7px] mt-1 font-black opacity-30 uppercase">${me ? status : m.senderName}</div>
                     </div>`;
                 });
                 if(updated) db.ref(path).set(messages);
@@ -324,10 +322,8 @@
             });
         }
 
-        // --- APP LOGIC ---
         function render() {
-            const loans = userData.loans || [];
-            const bal = loans.reduce((a, b) => a + b.amount, 0);
+            const bal = (userData.loans || []).reduce((a, b) => a + b.amount, 0);
             document.getElementById('totalDisplay').innerText = `$${bal.toFixed(2)}`;
             document.getElementById('headerID').innerText = "#" + userData.lendID;
             document.getElementById('headerName').innerText = userData.email.split('@')[0];
@@ -336,74 +332,21 @@
             if(userData.profilePic) avBox.innerHTML = `<img src="${userData.profilePic}" class="avatar-circle">`;
             else avBox.innerHTML = `<div class="w-10 h-10 bg-[#39FF14] text-black rounded-full flex items-center justify-center font-black">${userData.email[0].toUpperCase()}</div>`;
 
-            // Friends
-            const containers = [document.getElementById('friendsListContainer'), document.getElementById('friendsPageContainer')];
-            containers.forEach(c => {
-                c.innerHTML = '';
-                (userData.friends || []).forEach(fID => {
-                    c.innerHTML += `<div class="glass p-4 rounded-2xl flex justify-between items-center">
-                        <div>
-                            <p class="text-[10px] font-black text-[#39FF14] uppercase">${nicknames[fID] || 'USER'}</p>
-                            <p class="text-[8px] opacity-40 font-bold">#${fID}</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="setNickname('${fID}')" class="p-2 glass rounded-lg text-[9px]">🏷️</button>
-                            <button onclick="openChat('${fID}', 'private')" class="p-2 glass rounded-lg text-lg">💬</button>
-                        </div>
-                    </div>`;
-                });
+            const list = document.getElementById('friendsListContainer');
+            list.innerHTML = '';
+            (userData.friends || []).forEach(fID => {
+                list.innerHTML += `<div class="glass p-4 rounded-2xl flex justify-between items-center border border-white/5">
+                    <div>
+                        <p class="text-[10px] font-black text-[#39FF14] uppercase">${nicknames[fID] || 'CONTACT'}</p>
+                        <p class="text-[8px] opacity-40">#${fID}</p>
+                    </div>
+                    <button onclick="openChat('${fID}', 'private')" class="p-2 glass rounded-lg text-lg">💬</button>
+                </div>`;
             });
-
-            // Groups
-            const gList = document.getElementById('groupsListContainer'); gList.innerHTML = '';
-            (userData.groups || []).forEach(gID => {
-                db.ref(`groups/${gID}`).once('value', s => {
-                    const g = s.val();
-                    if(g) {
-                        gList.innerHTML += `<div class="glass p-4 rounded-2xl flex justify-between items-center border border-[#39FF14]/30">
-                            <p class="text-[10px] font-black text-[#39FF14] uppercase">${g.name}</p>
-                            <button onclick="openChat('${gID}', 'group')" class="p-2 glass rounded-lg text-lg">💬</button>
-                        </div>`;
-                    }
-                });
-            });
-        }
-
-        async function createNewGroup() {
-            const name = prompt("Group Name:");
-            const friends = prompt("Invite IDs (comma separated):");
-            if(name && friends) {
-                const members = friends.toUpperCase().split(',').map(s => s.trim());
-                members.push(userData.lendID);
-                const gRef = db.ref('groups').push();
-                const gID = gRef.key;
-                await gRef.set({ name, members, creator: userData.lendID });
-                // Update members' group lists
-                const snap = await db.ref('users').once('value');
-                const all = snap.val();
-                for(let p in all) {
-                    if(members.includes(all[p].lendID)) {
-                        const ug = all[p].groups || []; ug.push(gID);
-                        await db.ref(`users/${p}/groups`).set(ug);
-                    }
-                }
-            }
-        }
-
-        async function showMemberList() {
-            if(activeChatType === 'group') {
-                const snap = await db.ref(`groups/${activeChatFriend}`).once('value');
-                alert("GROUP MEMBERS:\n" + snap.val().members.join("\n"));
-            }
-        }
-
-        function setNickname(id) {
-            const n = prompt("Enter Alias:");
-            if(n) { nicknames[id] = n; localStorage.setItem('iou_nicknames', JSON.stringify(nicknames)); render(); }
         }
 
         function processDeposit() {
-            const l = userData.loans || []; l.push({name: 'TOP_UP', amount: 50});
+            const l = userData.loans || []; l.push({name: 'CREDIT', amount: 50});
             db.ref(`users/${userData.email.replace(/\./g, '_')}/loans`).set(l);
             navTo('home');
         }
