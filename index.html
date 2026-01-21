@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOU | Finance Assistance</title>
+    <title>IOU | Fresh Start</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
@@ -11,6 +11,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
+        // Updated with your NEW credentials from image_ba2514.png
         const firebaseConfig = {
             apiKey: "AIzaSyAfWESSB4rsn29ID7gZmSTMC-xL_6M2RBo",
             authDomain: "iou-v2-app-b0278.firebaseapp.com",
@@ -37,27 +38,27 @@
 </head>
 <body>
 
-    <div id="authSection" class="fixed inset-0 bg-black flex items-center justify-center p-6">
+    <div id="authSection" class="fixed inset-0 bg-black flex items-center justify-center p-6 z-50">
         <div class="w-full max-w-md">
             <div class="neon-logo mb-2">IOU</div>
             <p class="text-center font-bold tracking-[0.3em] mb-8 text-xs text-[#00FF41]">FINANCE ASSISTANCE</p>
             <div class="glass p-8">
-                <input type="text" id="email" placeholder="ANY NAME OR EMAIL">
+                <input type="text" id="email" placeholder="ANY NAME (ex: alex)">
                 <input type="password" id="pass" placeholder="PASSWORD">
-                <button onclick="handleAuth()" id="actionBtn" class="neo-btn mb-4">Connect</button>
+                <button onclick="handleAuth(false)" id="loginBtn" class="neo-btn mb-4">Connect</button>
                 <div class="text-center">
-                    <button onclick="toggleMode()" id="toggleBtn" class="text-[10px] underline uppercase opacity-60">Enroll New Account</button>
+                    <button onclick="handleAuth(true)" class="text-[10px] underline uppercase opacity-60">Enroll New Account</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="mainApp" class="hidden h-screen flex flex-col">
-        <header class="p-6 border-b border-[#00FF41]/20 flex justify-between items-center">
+        <header class="p-6 border-b border-[#00FF41]/20 flex justify-between items-center bg-black">
             <span class="font-black text-xs tracking-widest uppercase" id="userDisplay">USER</span>
             <button onclick="auth.signOut().then(()=>location.reload())" class="text-[9px] border border-[#00FF41] px-4 py-2 rounded-full">EXIT</button>
         </header>
-        <main class="flex-1 flex items-center justify-center p-6">
+        <main class="flex-1 flex items-center justify-center p-6 bg-black">
             <div class="glass p-12 w-full max-w-sm text-center">
                 <p class="text-[10px] uppercase opacity-50 mb-2">Credit Balance</p>
                 <h2 id="balText" class="text-7xl font-black mb-8">$0.00</h2>
@@ -67,26 +68,24 @@
     </div>
 
     <script>
-        let isEnroll = false;
-        function toggleMode() {
-            isEnroll = !isEnroll;
-            document.getElementById('actionBtn').innerText = isEnroll ? "Create Account" : "Connect";
-            document.getElementById('toggleBtn').innerText = isEnroll ? "Back to Login" : "Enroll New Account";
-        }
-
-        async function handleAuth() {
-            const raw = document.getElementById('email').value.trim();
+        async function handleAuth(isEnroll) {
+            const rawName = document.getElementById('email').value.trim();
             const pass = document.getElementById('pass').value;
-            const email = raw.includes('@') ? raw : `${raw}@iou.com`;
+            
+            if(!rawName || !pass) return alert("Enter name and password");
+
+            // Automatically turns "alex" into "alex@iou.com"
+            const email = rawName.includes('@') ? rawName : `${rawName}@iou.com`;
 
             try {
                 if(isEnroll) {
                     await auth.createUserWithEmailAndPassword(email, pass);
+                    alert("Account Created! Use 'Connect' now.");
                 } else {
                     await auth.signInWithEmailAndPassword(email, pass);
                 }
             } catch (err) {
-                alert("System Error: " + err.message);
+                alert("Error: " + err.message);
             }
         }
 
@@ -94,6 +93,8 @@
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
             document.getElementById('userDisplay').innerText = user.email.split('@')[0];
+            
+            // Listen for balance updates
             db.ref('data/' + user.uid).on('value', (s) => {
                 const val = s.val() ? s.val().balance : 0;
                 document.getElementById('balText').innerText = `$${val.toFixed(2)}`;
@@ -109,6 +110,7 @@
             });
         }
 
+        // Auto-login when user is detected
         auth.onAuthStateChanged(u => { if(u) launch(u); });
     </script>
 </body>
